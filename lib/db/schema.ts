@@ -1,5 +1,7 @@
 import {pgTable,text,boolean,integer,uuid,timestamp} from 'drizzle-orm/pg-core'
-import {relations} from "drizzle-orm"
+import {relations,InferSelectModel,InferInsertModel} from "drizzle-orm"
+
+
 
 export const files = pgTable("files",{
     id: uuid("id").defaultRandom().primaryKey(),
@@ -26,7 +28,18 @@ export const files = pgTable("files",{
     createdAt:timestamp("created_at").defaultNow().notNull(),
     updatedAt:timestamp("updated_at").defaultNow().notNull(),
     
-
+    
 
 
 })
+
+export const filesRelations = relations(files,({one,many})=>({
+    parent: one(files,{
+        fields: [files.parentId],
+        references:[files.id]
+    }),
+    children:many(files)
+}))
+
+export const File = typeof files.$inferSelect
+export const NewFile = typeof files.$inferInsert
